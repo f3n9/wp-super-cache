@@ -199,6 +199,11 @@ function wp_cache_serve_cache_file() {
 				header( 'Last-Modified: ' . $local_mod_time );
 			}
 			echo $cachefiledata;
+                        if ( $_SERVER["HTTP_X_IS_REVERSE_PROXY"] ) {
+                          $cachefiledata = str_replace("http:", "https:", $cachefiledata);
+                          $cachefiledata = str_replace("https://"   . $_SERVER["HTTP_HOST"], "https://"   . $_SERVER["HTTP_X_ORIGINAL_HOST"] . "/new" , $cachefiledata);
+                          $cachefiledata = str_replace("https:\/\/" . $_SERVER["HTTP_HOST"], "https:\/\/" . $_SERVER["HTTP_X_ORIGINAL_HOST"] . "\/new", $cachefiledata);
+                        }
 			exit();
 		} else {
 			wp_cache_debug( 'No wp-cache file exists. Must generate a new one.' );
