@@ -258,7 +258,14 @@ function wp_cache_serve_cache_file() {
 			}
 		} else {
 			wp_cache_debug( 'Getting legacy cache file ' . $cache_file, 1 );
-			echo( wp_cache_get_legacy_cache( $cache_file ) );
+			$cachefiledata = wp_cache_get_legacy_cache( $cache_file );
+                        if ( $_SERVER["HTTP_X_IS_REVERSE_PROXY"] ) {
+                          $cachefiledata = str_replace("http:", "https:", $cachefiledata);
+                          $cachefiledata = str_replace("https://"   . $_SERVER["HTTP_HOST"], "https://"   . $_SERVER["HTTP_X_ORIGINAL_HOST"] . "/new" , $cachefiledata);
+                          $cachefiledata = str_replace("https:\/\/" . $_SERVER["HTTP_HOST"], "https:\/\/" . $_SERVER["HTTP_X_ORIGINAL_HOST"] . "\/new", $cachefiledata);
+                        }
+                        echo ( $cachefiledata );
+			# echo( wp_cache_get_legacy_cache( $cache_file ) );
 		}
 	}
 	wp_cache_debug( 'exit request', 5 );
